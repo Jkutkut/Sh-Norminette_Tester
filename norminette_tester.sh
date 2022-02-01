@@ -61,9 +61,9 @@ for f in $(ls *.h *.c); do
 	fi
 
 	if expr "$f" : '.*\.c$' > /dev/null; then
-		norminette $f > $tmpFile
-	else
 		norminette -R CheckForbiddenSourceHeader $f > $tmpFile
+	else
+		norminette -R CheckDefine $f > $tmpFile
 	fi &&
 	echo "$f:\t${LGREEN}OK!${NC}" ||
 	{

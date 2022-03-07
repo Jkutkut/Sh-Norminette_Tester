@@ -12,6 +12,19 @@ TITLE='\033[38;5;33m'
 
 tmpFile=norminetteTmp
 
+# Check if norminette is installed
+if ! [ -x "$(command -v norminette)" ]; then
+	# Check if file norminette exists
+	if [ -f "/home/$USER/.local/bin/norminette" ]; then
+		alias norminette="python3 /home/$USER/.local/bin/norminette"
+	else
+		echo "${LRED}norminette not found${NC}. Please install it."
+		echo "norminette is available at"
+		echo "https://github.com/42School/norminette"
+		exit 1
+	fi
+fi
+
 if [ "$1" = "--help" ]; then
 	{
 	echo "                              ${TITLE}Test norminette help${NC}"

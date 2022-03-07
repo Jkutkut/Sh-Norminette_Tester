@@ -67,7 +67,7 @@ else
 	stopOnError=true
 fi
 
-for f in $(ls *.h *.c); do
+for f in $(find -type f \( -name "*.c" -o -name "*.h" \)); do
 	if [ ! -f "$f" ]; then
 		echo "${LRED}$f${NC} is not a file"
 		break;

@@ -78,9 +78,9 @@ for f in $(find -type f \( -name "*.c" -o -name "*.h" \)); do
 	else
 		norminette -R CheckDefine $f > $tmpFile
 	fi &&
-	echo "$f:\t${LGREEN}OK!${NC}" ||
+	echo "$f ${LGREEN}OK!${NC}" ||
 	{
-		echo "$f: ${LRED}Error!${NC}"
+		echo "$f ${LRED}Error!${NC}"
 		sed -n '2,$p' $tmpFile
 		if [ $stopOnError = true ]; then
 			break

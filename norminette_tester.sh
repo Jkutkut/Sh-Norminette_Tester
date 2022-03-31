@@ -11,6 +11,7 @@ LBLUE='\033[1;34m'
 TITLE='\033[38;5;33m'
 
 tmpFile=norminetteTmp
+stopOnError=true
 
 # Check if norminette is installed
 if ! [ -x "$(command -v norminette)" ]; then
@@ -25,67 +26,74 @@ if ! [ -x "$(command -v norminette)" ]; then
 	fi
 fi
 
-if [ "$1" = "--help" ]; then
-	{
-	echo "                              ${TITLE}Test norminette help${NC}"
-
-	# Title
-	echo "${TITLE}NAME${NC}"
-	echo "\ttest_norminette - test norminette.\n"
-
-	# Synopsis
-	echo "${TITLE}SYNOPSIS${NC}"
-	echo "\t./test_norminette [OPTION]...\n"
-
-	# Description
-	echo "${TITLE}DESCRIPTION${NC}"
-	echo "\tRuns norminette tests on .c and .h files in the current directory.\n"
-
-	# Options
-	echo "${TITLE}OPTIONS${NC}"
-	echo "\t${YELLOW}--help${NC}"
-	echo "\t\tDisplays the help documentation.\n"
-	echo "\t${YELLOW}--warn${NC}"
-	echo "\t\tIf a file ${LRED}failed${NC} the test, just show the ${YELLOW}warning${NC}."
-	echo "\t\tIf not used, the script will end on the first ${LRED}error${NC}.\n"
-	} > testNorminetteHelp.tmp
-	less testNorminetteHelp.tmp
-	rm -f testNorminetteHelp.tmp
-	return
-else
-echo "${TITLE}
-  _   _                      _            _   _
- | \ | | ___  _ __ _ __ ___ (_)_ __   ___| |_| |_ ___ 
- |  \| |/ _ \| '__| '_ \` _ \| | '_ \ / _ \ __| __/ _ \\
- | |\  | (_) | |  | | | | | | | | | |  __/ |_| ||  __/
- |_| \_|\___/|_|  |_| |_| |_|_|_| |_|\___|\__|\__\___|\n\n${NC}"
-fi
-
-if [ "$1" = "--warn" ]; then
-	stopOnError=false
-else
-	stopOnError=true
-fi
-
-for f in $(find -type f \( -name "*.c" -o -name "*.h" \)); do
-	if [ ! -f "$f" ]; then
-		echo "${LRED}$f${NC} is not a file"
-		break;
+main() {
+	echo "${TITLE}
+	_   _                      _            _   _
+	| \ | | ___  _ __ _ __ ___ (_)_ __   ___| |_| |_ ___ 
+	|  \| |/ _ \| '__| '_ \` _ \| | '_ \ / _ \ __| __/ _ \\
+	| |\  | (_) | |  | | | | | | | | | |  __/ |_| ||  __/
+	|_| \_|\___/|_|  |_| |_| |_|_|_| |_|\___|\__|\__\___|\n\n${NC}"
 	fi
 
-	if expr "$f" : '.*\.c$' > /dev/null; then
-		norminette -R CheckForbiddenSourceHeader $f > $tmpFile
-	else
-		norminette -R CheckDefine $f > $tmpFile
-	fi &&
-	echo "$f ${LGREEN}OK!${NC}" ||
-	{
-		echo "$f ${LRED}Error!${NC}"
-		sed -n '2,$p' $tmpFile
-		if [ $stopOnError = true ]; then
-			break
-		fi
-	}
-done
+	while [ ! -z $1 ]; do # While the are avalible arguments
+		if [ "$1" = "--warn" ]; then
+			stopOnError=false
+		if [ "$1" = "--help" ]; then
+			{
+				echo "                              ${TITLE}Test norminette help${NC}"
 
-rm -f $tmpFile
+				# Title
+				echo "${TITLE}NAME${NC}"
+				echo "\ttest_norminette - test norminette.\n"
+
+				# Synopsis
+				echo "${TITLE}SYNOPSIS${NC}"
+				echo "\t./test_norminette [OPTION]...\n"
+
+				# Description
+				echo "${TITLE}DESCRIPTION${NC}"
+				echo "\tRuns norminette tests on .c and .h files in the current directory.\n"
+
+				# Options
+				echo "${TITLE}OPTIONS${NC}"
+				echo "\t${YELLOW}--help${NC}"
+				echo "\t\tDisplays the help documentation.\n"
+				echo "\t${YELLOW}--warn${NC}"
+				echo "\t\tIf a file ${LRED}failed${NC} the test, just show the ${YELLOW}warning${NC}."
+				echo "\t\tIf not used, the script will end on the first ${LRED}error${NC}.\n"
+			} > testNorminetteHelp.tmp
+			less testNorminetteHelp.tmp
+			rm -f testNorminetteHelp.tmp
+			return
+		else
+			echo "Argument not found"
+			return
+		fi
+		shift
+	done
+
+	for f in $(find -type f \( -name "*.c" -o -name "*.h" \)); do
+		if [ ! -f "$f" ]; then
+			echo "${LRED}$f${NC} is not a file"
+			break;
+		fi
+
+		if expr "$f" : '.*\.c$' > /dev/null; then
+			norminette -R CheckForbiddenSourceHeader $f > $tmpFile
+		else
+			norminette -R CheckDefine $f > $tmpFile
+		fi &&
+		echo "$f ${LGREEN}OK!${NC}" ||
+		{
+			echo "$f ${LRED}Error!${NC}"
+			sed -n '2,$p' $tmpFile
+			if [ $stopOnError = true ]; then
+				break
+			fi
+		}
+	done
+
+	rm -f $tmpFile
+}
+
+main

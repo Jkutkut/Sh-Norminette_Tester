@@ -33,12 +33,12 @@ main() {
 	|  \| |/ _ \| '__| '_ \` _ \| | '_ \ / _ \ __| __/ _ \\
 	| |\  | (_) | |  | | | | | | | | | |  __/ |_| ||  __/
 	|_| \_|\___/|_|  |_| |_| |_|_|_| |_|\___|\__|\__\___|\n\n${NC}"
-	fi
 
-	while [ ! -z $1 ]; do # While the are avalible arguments
+	# While the are avalible arguments
+	while [ ! -z $1 ]; do
 		if [ "$1" = "--warn" ]; then
 			stopOnError=false
-		if [ "$1" = "--help" ]; then
+		elif [ "$1" = "--help" ]; then
 			{
 				echo "                              ${TITLE}Test norminette help${NC}"
 
@@ -69,7 +69,7 @@ main() {
 			echo "Argument not found"
 			return
 		fi
-		shift
+		shift;
 	done
 
 	for f in $(find -type f \( -name "*.c" -o -name "*.h" \)); do

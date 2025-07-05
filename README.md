@@ -1,6 +1,6 @@
 # Norminette tester:
 
-Tool to automate the testing of files using [norminette](https://github.com/42School/norminette).
+Tool to automate the testing of files using [norminette](https://github.com/42School/norminette) in a prettier way.
 
 	./norminette_tester.sh --help
 
